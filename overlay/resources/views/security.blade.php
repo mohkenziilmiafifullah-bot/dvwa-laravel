@@ -2,6 +2,7 @@
 @section('title','DVWA Security')
 @section('content')
 <h2>DVWA Security</h2>
+<h3>Security Level</h3>
 <p>Level saat ini: <b>{{ $level }}</b></p>
 <form method="POST" action="/security">
 <select name="security">

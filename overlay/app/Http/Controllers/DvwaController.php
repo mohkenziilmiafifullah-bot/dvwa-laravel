@@ -73,6 +73,23 @@ class DvwaController extends Controller
         return $this->page('home');
     }
 
+    public function instructions()
+    {
+        return $this->page('instructions');
+    }
+
+    public function about()
+    {
+        return $this->page('about');
+    }
+
+    public function phpinfo()
+    {
+        ob_start();
+        phpinfo();
+        return response(ob_get_clean());
+    }
+
     public function security(Request $r)
     {
         if ($r->isMethod('post')) {

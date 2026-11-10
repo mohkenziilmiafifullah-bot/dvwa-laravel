@@ -13,6 +13,9 @@ Route::withoutMiddleware([ValidateCsrfToken::class])->group(function () {
 
     Route::middleware(DvwaAuth::class)->group(function () {
         Route::get('/', [D::class, 'home']);
+        Route::get('/instructions', [D::class, 'instructions']);
+        Route::get('/about', [D::class, 'about']);
+        Route::get('/phpinfo', [D::class, 'phpinfo']);
         Route::match(['get', 'post'], '/security', [D::class, 'security']);
         Route::get('/vulnerabilities/brute', [D::class, 'brute']);
         Route::match(['get', 'post'], '/vulnerabilities/exec', [D::class, 'exec']);

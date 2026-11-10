@@ -1,3 +1,26 @@
+@php
+$plain = $plain ?? false;
+$menu = [
+  [['/', 'Home'], ['/instructions', 'Instructions'], ['/setup', 'Setup / Reset DB']],
+  [['/vulnerabilities/brute', 'Brute Force'], ['/vulnerabilities/exec', 'Command Injection'], ['/vulnerabilities/csrf', 'CSRF'],
+   ['/vulnerabilities/fi', 'File Inclusion'], ['/vulnerabilities/upload', 'File Upload'], ['/vulnerabilities/sqli', 'SQL Injection'],
+   ['/vulnerabilities/sqli_blind', 'SQL Injection (Blind)'], ['/vulnerabilities/xss_r', 'XSS (Reflected)'], ['/vulnerabilities/xss_s', 'XSS (Stored)']],
+  [['/security', 'DVWA Security'], ['/phpinfo', 'PHP Info'], ['/about', 'About']],
+  [['/logout', 'Logout']],
+];
+$more = [
+  'vulnerabilities/brute' => ['https://owasp.org/www-community/attacks/Brute_force_attack'],
+  'vulnerabilities/exec' => ['https://owasp.org/www-community/attacks/Command_Injection'],
+  'vulnerabilities/csrf' => ['https://owasp.org/www-community/attacks/csrf'],
+  'vulnerabilities/fi' => ['https://en.wikipedia.org/wiki/File_inclusion_vulnerability'],
+  'vulnerabilities/upload' => ['https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload'],
+  'vulnerabilities/sqli' => ['https://owasp.org/www-community/attacks/SQL_Injection'],
+  'vulnerabilities/sqli_blind' => ['https://owasp.org/www-community/attacks/Blind_SQL_Injection', 'https://owasp.org/www-community/attacks/SQL_Injection'],
+  'vulnerabilities/xss_r' => ['https://owasp.org/www-community/attacks/xss/'],
+  'vulnerabilities/xss_s' => ['https://owasp.org/www-community/attacks/xss/'],
+];
+$links = $more[request()->path()] ?? [];
+@endphp
 <!doctype html>
 <html lang="id">
 <head>
@@ -5,50 +28,70 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>@yield('title') :: DVWA Laravel</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font:15px/1.55 system-ui,Segoe UI,Arial,sans-serif;background:#0f172a;color:#e2e8f0}
-header{background:#020617;padding:14px 24px;border-bottom:3px solid #16a34a}
-header h1{margin:0;font-size:22px;letter-spacing:.5px}header span{color:#4ade80}
-.wrap{display:flex;min-height:calc(100vh - 110px)}
-nav{width:240px;background:#111c33;padding:14px 0;flex-shrink:0}
-nav a{display:block;padding:9px 22px;color:#cbd5e1;text-decoration:none;border-left:3px solid transparent}
-nav a:hover{background:#1e293b;border-left-color:#4ade80;color:#fff}
-nav hr{border:0;border-top:1px solid #1e293b;margin:8px 0}
-main{flex:1;padding:24px 32px;max-width:900px}
-h2{margin-top:0;color:#4ade80}
-input,select,textarea{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:8px 10px;font:inherit;margin:4px 0 10px;min-width:260px}
-button{background:#16a34a;color:#fff;border:0;border-radius:6px;padding:9px 18px;font:inherit;cursor:pointer}
-button:hover{background:#15803d}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;font:13px/1.5 Verdana,Arial,Helvetica,sans-serif;color:#000}
+#page{width:940px;max-width:100%;margin:0 auto;background:#f4f4f4;min-height:100vh;box-shadow:0 0 0 1px #ddd}
+#head{background:#2d2d2d;height:88px;display:flex;align-items:center;justify-content:center;border-bottom:4px solid #8dc63f}
+#body{display:flex;padding:24px 16px 20px 16px;gap:22px;min-height:560px}
+#menu{width:178px;flex-shrink:0}
+#menu a{display:block;background:#c8c8c8;border:1px solid #9a9a9a;border-top-color:#e2e2e2;border-left-color:#e2e2e2;color:#111;font:bold 13px Arial,Helvetica,sans-serif;padding:3px 6px;margin-bottom:4px;text-decoration:none}
+#menu a:hover{background:#d6d6d6}
+#menu a.on{background:#8dc63f;color:#fff;border-color:#7ab02f}
+#menu .gap{height:20px}
+#main{flex:1;min-width:0}
+h1,h2{font:bold 28px Arial,Helvetica,sans-serif;margin:0 0 14px;color:#111}
+h3{font:bold 18px Arial,Helvetica,sans-serif;margin:22px 0 8px}
+p{margin:8px 0}
+a{color:#6aa121;font-weight:bold}
+code{background:#e4e4e4;padding:1px 5px;border-radius:2px}
+form{border:1px solid #000;padding:18px 22px;margin:16px 0;background:#f4f4f4}
 label{display:block;margin-top:6px}
-.box{margin-top:16px;padding:12px 16px;border-radius:6px;border:1px solid #334155;background:#1e293b}
-.box.ok{border-color:#16a34a;color:#86efac}.box.bad{border-color:#dc2626;color:#fca5a5}
-pre{background:#020617;padding:12px;border-radius:6px;overflow:auto;white-space:pre-wrap}
-.warn{background:#422006;border:1px solid #a16207;color:#fde68a;padding:10px 14px;border-radius:6px}
-footer{padding:12px 24px;background:#020617;color:#94a3b8;font-size:13px}
-a{color:#4ade80}
+input,select,textarea{font:13px Arial,sans-serif;border:1px solid #999;padding:3px 4px;margin:2px 0 8px;background:#fff;min-width:170px}
+input[type=file]{border:0;padding:0}
+button{font:13px Arial,sans-serif;border:1px solid #777;background:#efefef;padding:2px 10px;margin-top:10px;cursor:pointer}
+button:hover{background:#e0e0e0}
+.box{margin:10px 0;padding:0}
+.box.ok{color:#0a7a0a}.box.bad{color:#c00}
+pre{background:#fff;border:1px solid #ccc;padding:8px;margin:10px 0;white-space:pre-wrap;overflow:auto;font:13px Consolas,monospace}
+.warn{border:1px solid #c9a227;background:#fff8dc;padding:8px 12px}
+#foot{text-align:center;font-size:12px;padding:10px;border-top:1px solid #ddd;color:#444}
+#foot b{color:#000}
+.logo-text{font:900 40px Arial Black,Arial,sans-serif;fill:#fff;letter-spacing:-2px}
+.plain #body{justify-content:center}
+.plain #main{max-width:420px}
+@media(max-width:760px){#body{flex-direction:column}#menu{width:100%}}
 </style>
 </head>
 <body>
-<header><h1>DVWA <span>Laravel</span> &mdash; Damn Vulnerable Web App</h1></header>
-<div class="wrap">
-<nav>
-<a href="/">Home</a>
-<a href="/setup">Setup / Reset DB</a>
-<hr>
-<a href="/vulnerabilities/brute">Brute Force</a>
-<a href="/vulnerabilities/exec">Command Injection</a>
-<a href="/vulnerabilities/csrf">CSRF</a>
-<a href="/vulnerabilities/fi">File Inclusion</a>
-<a href="/vulnerabilities/upload">File Upload</a>
-<a href="/vulnerabilities/sqli">SQL Injection</a>
-<a href="/vulnerabilities/sqli_blind">SQL Injection (Blind)</a>
-<a href="/vulnerabilities/xss_r">XSS (Reflected)</a>
-<a href="/vulnerabilities/xss_s">XSS (Stored)</a>
-<hr>
-<a href="/security">DVWA Security</a>
-<a href="/logout">Logout</a>
-</nav>
-<main>@yield('content')</main>
+<div id="page" class="{{ $plain ? 'plain' : '' }}">
+<div id="head">
+<svg width="140" height="76" viewBox="0 0 140 76" aria-label="DVWA">
+<ellipse cx="72" cy="40" rx="58" ry="24" fill="none" stroke="#8dc63f" stroke-width="5" stroke-dasharray="250 70" transform="rotate(-16 72 40)"/>
+<text x="70" y="52" text-anchor="middle" class="logo-text" font-size="40">DVWA</text>
+</svg>
 </div>
-<footer>Security Level: <b>{{ $level ?? 'low' }}</b> &nbsp;|&nbsp; User: <b>{{ session('dvwa_name') }}</b> &nbsp;|&nbsp; Hanya untuk latihan di localhost.</footer>
+<div id="body">
+@unless($plain)
+<div id="menu">
+@foreach($menu as $i => $group)
+@if($i)<div class="gap"></div>@endif
+@foreach($group as [$u, $label])
+<a href="{{ $u }}" class="{{ request()->is($u === '/' ? '/' : ltrim($u, '/')) ? 'on' : '' }}">{{ $label }}</a>
+@endforeach
+@endforeach
+</div>
+@endunless
+<div id="main">
+@yield('content')
+@if(count($links))
+<h3>More Information</h3>
+<ul>@foreach($links as $l)<li><a href="{{ $l }}" target="_blank" rel="noopener">{{ $l }}</a></li>@endforeach</ul>
+@endif
+</div>
+</div>
+@unless($plain)
+<div id="foot">Username: <b>{{ session('dvwa_name') }}</b> &nbsp; Security Level: <b>{{ $level ?? 'low' }}</b> &nbsp; Locale: <b>id</b> &nbsp; SQLi DB: <b>MySQL</b><br>DVWA Laravel &mdash; hanya untuk latihan di localhost</div>
+@endunless
+</div>
 </body>
 </html>
